@@ -12,79 +12,142 @@ $(document).ready(function() {
     ];
 //1. Add groceries to <ul>. Store status, price and quantity as data attributes
 
-
+    var addItem = function(name, status, price, quantity){
+        var element = $('<li/>');
+        element.attr( "data-price", price);
+        element.attr( "data-status", status);
+        element.attr("data-quantity", quantity);
+        element.attr("data-name", name);
+        element.text(name);
+        $("#list").append(element);
+    };
     for (i = 0; i < groceries.length; i++) {
         var currentItem = groceries[i];
-        var element = $('<li/>');
-        element.attr( "data-price", currentItem.price);
-        element.attr( "data-status", currentItem.status);
-        element.attr("data-quantity", currentItem.quantity);
-        element.text(currentItem.name);
-        $("#list").append(element);
+        addItem(currentItem.name,currentItem.status, currentItem.price,currentItem.quantity);
     }
 
 
 //2. Give 'needed' items a background-color of your choosing. Do the same for 'complete' items.
 //   Choose any text color you desire.
 
-    $('li').each(function(){
-        if($(this).attr("data-status")=== "needed"){
-            $(this).css("background-color", "red");
-        }
+    var setColor = function(){
+        $('li').each(function(){
+            if($(this).css("background-color")=== "rgba(0, 0, 0, 0)"){
+                if($(this).attr("data-status")=== "needed"){
+                    $(this).css("background-color", "red");
+                } else {
+                    $(this).css("background-color", "blue");
+                }
+            }
 
-    })
+        });
+    };
+
+    setColor();
 
 //3. Display the item quantity next to it's name. (  i.e. Tomatoes (5)  )
 
-    $("li").each(function(){
-        var label = $(this).text() + " (" + $(this).attr("data-quantity") + ")";
-        $(this).text(label);
-    })
+
+    var setQuantity = function(){
+        $("li").each(function(){
+            var label = $(this).attr("data-name") + " (" + $(this).attr("data-quantity") + ")";
+            $(this).text(label);
+        });
+    };
+   setQuantity();
 
 //4. Display total quantity and cost on the page.
 
-    var totalQuantity = 0;
-    for (i = 0; i < groceries.length; i++) {
-        var currentItem = groceries[i];
-        totalQuantity = totalQuantity + currentItem.quantity;
-    }
+    var setTotalQuantity = function(){
+        var totalQuantity = 0;
+        $("li").each(function(){
+            var Quantity = $(this).attr("data-quantity");
+            totalQuantity = totalQuantity + parseInt(Quantity);
+        });
 
-    $(".numItems h4").text("Total Quantity: " + totalQuantity);
+        $(".numItems h4").text("Total Quantity: " + totalQuantity);
+    };
 
+    setTotalQuantity();
 
-    var totalPrice = 0;
-    for(i = 0; i < groceries.length; i++) {
-        var currentItem = groceries[i];
-        totalPrice = totalPrice + currentItem.price * currentItem.quantity;
-    }
+    var setTotalPrice = function(){
+        console.log("setTotalPrice");
+        var totalPrice = 0;
+        $("li").each(function(){
+            var Price = $(this).attr("data-price");
+            var itemTotalPrice = Price * $(this).attr("data-quantity");
+            totalPrice = totalPrice + itemTotalPrice;
+        });
 
-    $(".totalCost h4").text("Total Cost: $" + totalPrice);
+        $(".totalCost h4").text("Total Cost: $" + totalPrice);
+    };
+
+    setTotalPrice();
+
 
 
 
 //5. When an item is hovered over, it's background should darken slightly. This can be done through CSS but use
 //   JS for practice.
+    var addHandlers = function(){
+        $("li").mouseenter(function(){
+            if ($(this).css("background-color") === ("rgb(255, 0, 0)")){
+                $(this).css("background-color", "rgb(100, 0, 0)");
+            }
+            if($(this).css("background-color") === ("rgb(0, 0, 255)")){
+                $(this).css("background-color","rgb(0, 0, 100)" );
+            }
 
-   $("li").mouseenter(function(){
-       if ($(this).css("background-color") === ("rgb(255, 0, 0)")){
-           $(this).css("background-color", "blue");
-       } else {
-           $(this).css("background-color","black" )
-       }
+        });
 
-   })
+        $("li").mouseleave(function(){
+            if ($(this).hasClass("selected")){
+                return;
+            }
+            if($(this).css("background-color") === ("rgb(100, 0, 0)")){
+                $(this).css("background-color", "rgb(255, 0, 0)");
+            } else {
+                $(this).css("background-color", "rgb(0, 0, 255)");
+            }
+        });
+        $("li").dblclick(function(){
+            $(this).addClass("selected");
 
+        });
+
+    };
+
+addHandlers();
 
 //6. When and item is double-clicked, give it the class 'selected' and have it's background remain slightly darkened.
 
-    //$("li").dblclick(function(){
 
-    //}
 
 
 //7. When 'Remove Item' is clicked, delete the item from the list. Have the item .fadeOut()
 
+    $("#removeItem").click(function(){
+        $("li").each(function(){
+            if($(this).hasClass("selected")){
+                $(this).fadeOut();
+            }
+        });
+    });
+
 //8. When 'Add item' is clicked, a new item should be added to the list. 'Status' should default as 'needed'.
+    $("#addNew .btn").click(function(){
+        var name = $("#addItem").val();
+        var price = $("#addPrice").val();
+        var quantity = $("#addQuantity").val();
+    addItem(name,"needed",price,quantity);
+
+        setColor();
+        setQuantity();
+        setTotalQuantity();
+        setTotalPrice();
+        addHandlers();
+    });
+
 
 //9. ** Have total quantity and cost update when items are added or removed!
 
