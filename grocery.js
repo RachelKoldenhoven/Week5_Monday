@@ -104,9 +104,11 @@ $(document).ready(function() {
             if ($(this).hasClass("selected")){
                 return;
             }
+            console.log($(this).css("background-color"));
             if($(this).css("background-color") === ("rgb(100, 0, 0)")){
                 $(this).css("background-color", "rgb(255, 0, 0)");
-            } else {
+            }
+            if($(this).css("background-color") ===  ("rgb(0, 0, 100)")){
                 $(this).css("background-color", "rgb(0, 0, 255)");
             }
         });
